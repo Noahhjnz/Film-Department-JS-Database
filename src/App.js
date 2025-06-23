@@ -1,18 +1,22 @@
-// src/App.js
+import 'firebaseui/dist/firebaseui.css';
 import React, { useEffect, useState } from "react";
-import { db } from "./firebase";
+import { auth, db } from "./firebase";
 import {
   collection,
   getDocs,
   updateDoc,
   doc,
 } from "firebase/firestore";
-import { AgGridReact } from "ag-grid-react"; // some testing
+import { onAuthStateChanged, EmailAuthProvider, GoogleAuthProvider } from "firebase/auth";
+import * as firebaseui from "firebaseui";
+import { AgGridReact } from "ag-grid-react";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [uiRendered, setUiRendered] = useState(false);
   const [rowData, setRowData] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
 
@@ -22,16 +26,40 @@ function App() {
   ];
 
   useEffect(() => {
-    const fetchData = async () => {
-      const snapshot = await getDocs(collection(db, "devices"));
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setRowData(data);
-    };
-    fetchData();
-  }, []);
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+    });
+
+    if (!user && !uiRendered) {
+      const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
+      ui.start("#firebaseui-auth-container", {
+        signInOptions: [
+          EmailAuthProvider.PROVIDER_ID,
+          GoogleAuthProvider.PROVIDER_ID,
+        ],
+        callbacks: {
+          signInSuccessWithAuthResult: () => false,
+        },
+      });
+      setUiRendered(true);
+    }
+
+    return () => unsubscribe();
+  }, [user, uiRendered]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchData = async () => {
+        const snapshot = await getDocs(collection(db, "devices"));
+        const data = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setRowData(data);
+      };
+      fetchData();
+    }
+  }, [user]);
 
   const handleReserve = async () => {
     if (!selectedRow) return alert("Select a device first.");
@@ -57,6 +85,15 @@ function App() {
       )
     );
   };
+
+  if (!user) {
+    return (
+      <div style={{ padding: 20 }}>
+        <h2>Login</h2>
+        <div id="firebaseui-auth-container"></div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: 20 }}>
