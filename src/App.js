@@ -1,16 +1,20 @@
 // src/App.js
 import React, { useEffect, useState } from "react";
-import { db } from "./firebase";
+import { db } from "./firebase.js"; 
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'; 
 import {
   collection,
   getDocs,
   updateDoc,
   doc,
 } from "firebase/firestore";
-import { AgGridReact } from "ag-grid-react"; // some testing
-
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { AgGridReact } from "ag-grid-react";
+ModuleRegistry.registerModules([AllCommunityModule]);
+
+
+
 
 function App() {
   const [rowData, setRowData] = useState([]);
