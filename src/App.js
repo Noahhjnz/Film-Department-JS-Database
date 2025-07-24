@@ -18,8 +18,8 @@ function App() {
   const [selectedRow, setSelectedRow] = useState(null);
 
   const columnDefs = [
-    { headerName: "Name", field: "name", tooltipField: "tooltip" },
-    { headerName: "Reserved", field: "reserved" },
+    { headerName: "Name", field: "name", flex: 1, minWidth: 120 },
+    { headerName: "Reserved", field: "reserved", flex: 2, minWidth: 250, wrapText: true, autoHeight: true },
   ];
 
   useEffect(() => {
@@ -79,7 +79,9 @@ function App() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>AG Grid with Firestore</h2>
+      <h2 style={{ fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 600, fontSize: 24, color: '#000000', marginBottom: 20 }}>
+        AG Grid with Firestore
+      </h2>
       <div className="ag-theme-alpine" style={{ height: 400, width: 600 }}>
         <AgGridReact
           rowData={rowData}
@@ -94,7 +96,24 @@ function App() {
           }
         />
       </div>
-      <button style={{ marginTop: 10 }} onClick={handleReserve}>
+      <style>{`
+        .reserve-btn {
+          font-family: Inter, system-ui, sans-serif;
+          font-weight: 600;
+          font-size: 16px;
+          color: #222F3E;
+          background: #fff;
+          border: 1px solid #b5bec6;
+          border-radius: 8px;
+          padding: 8px 20px;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .reserve-btn:hover {
+          background: #e3f0fb;
+        }
+      `}</style>
+      <button className="reserve-btn" style={{ marginTop: 10 }} onClick={handleReserve}>
         RESERVE
       </button>
     </div>
