@@ -1,6 +1,6 @@
 // src/App.js
 import React, { useEffect, useState } from "react";
-import { db } from "./firebase.js"; 
+import { db, auth } from "./firebase.js"; 
 import {
   collection,
   getDocs,
@@ -18,8 +18,25 @@ function App() {
   const [selectedRow, setSelectedRow] = useState(null);
 
   const columnDefs = [
-    { headerName: "Name", field: "name", flex: 1, minWidth: 120 },
-    { headerName: "Reserved", field: "reserved", flex: 2, minWidth: 250, wrapText: true, autoHeight: true },
+    { headerName: "Name", 
+      field: "name", 
+      flex: 1, 
+      minWidth: 120 },
+      
+    { 
+      headerName: "Reserved", 
+      field: "reserved", 
+      flex: 2, 
+      minWidth: 250, 
+      wrapText: true, 
+      autoHeight: true,
+      tooltipValueGetter: params => {
+        if (params.data && params.data.reservedBy) {
+          return `Device Reserved By: ${params.data.reservedBy}`;
+        }
+        return null;
+      }
+    },
   ];
 
   useEffect(() => {
@@ -68,7 +85,8 @@ function App() {
     const reservedStr = `Reserved from ${start} to ${endStr}`;
 
     const deviceRef = doc(db, "devices", selectedRow.id);
-    await updateDoc(deviceRef, { reserved: reservedStr });
+    const userEmail = auth.currentUser ? auth.currentUser.email : "Unknown";
+    await updateDoc(deviceRef, { reserved: reservedStr, reservedBy: userEmail });
 
     setRowData(prev =>
       prev.map(item =>
@@ -96,24 +114,7 @@ function App() {
           }
         />
       </div>
-      <style>{`
-        .reserve-btn {
-          font-family: Inter, system-ui, sans-serif;
-          font-weight: 600;
-          font-size: 16px;
-          color: #222F3E;
-          background: #fff;
-          border: 1px solid #b5bec6;
-          border-radius: 8px;
-          padding: 8px 20px;
-          cursor: pointer;
-          transition: background 0.2s;
-        }
-        .reserve-btn:hover {
-          background: #e3f0fb;
-        }
-      `}</style>
-      <button className="reserve-btn" style={{ marginTop: 10 }} onClick={handleReserve}>
+      <button style={{ marginTop: 10 }} onClick={handleReserve}>
         RESERVE
       </button>
     </div>
