@@ -10,6 +10,7 @@ import {
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { AgGridReact } from "ag-grid-react";
 import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
+import { signOut } from "firebase/auth";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -95,27 +96,113 @@ function App() {
     );
   };
 
+  const handleLogout = async () => {
+    await signOut(auth);
+    window.location.href = "/login";
+  };
+
   return (
-    <div style={{ padding: 20 }}>
-      <h2 style={{ fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 600, fontSize: 24, color: '#000000', marginBottom: 20 }}>
+    <div style={{ padding: 5 }}>
+      <h2 style={{ fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 600, fontSize: 24, color: '#000000', marginBottom: 5 }}>
         AG Grid with Firestore
       </h2>
-      <div className="ag-theme-alpine" style={{ height: 400, width: 600 }}>
-        <AgGridReact
-          rowData={rowData}
-          columnDefs={columnDefs}
-          onRowClicked={(e) => {
-            if (!e.data.is_divider) setSelectedRow(e.data);
-          }}
-          getRowStyle={(params) =>
-            params.data.is_divider
-              ? { fontWeight: "bold", background: "#f0f0f0" }
-              : {}
-          }
-        />
+      {/* Layout: Grid + Side Panel */}
+      <div style={{ display: 'flex', gap: 40, alignItems: 'flex-start', padding: 10 }}>
+        {/* Grid Section */}
+        <div className="ag-theme-alpine" style={{ height: 400, width: 600 }}>
+          <AgGridReact
+            rowData={rowData}
+            columnDefs={columnDefs}
+            onRowClicked={(e) => {
+              if (!e.data.is_divider) setSelectedRow(e.data);
+            }}
+            getRowStyle={(params) =>
+              params.data.is_divider
+                ? { fontWeight: "bold", background: "#f0f0f0" }
+                : {}
+            }
+          />
+        </div>
+        {/* Side Panel Section */}
+        <div style={{ minWidth: 350, flex: 1 }}>
+          {selectedRow ? (
+            <>
+              {/* Name Box*/}
+              <div style={{
+                border: '2px solid #888',
+                borderRadius: 8,
+                padding: 8,
+                marginBottom: 16,
+                textAlign: 'center',
+                fontWeight: 600
+              }}>
+                {selectedRow.name || 'Name Of Item'}
+              </div>
+              {/* Image and Details*/}
+              <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+                {/* Image Box */}
+                <div style={{
+                  border: '2px solid #888',
+                  borderRadius: 8,
+                  padding: 8,
+                  minWidth: 120,
+                  minHeight: 120,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {selectedRow.imageUrl ? (
+                    <img src={selectedRow.imageUrl} alt={selectedRow.name} style={{ maxWidth: 100, maxHeight: 100 }} />
+                  ) : (
+                    <div style={{ color: '#888' }}>No Image</div>
+                  )}
+                </div>
+                {/* Details Box */}
+                <div style={{
+                  border: '2px solid #888',
+                  borderRadius: 8,
+                  padding: 16,
+                  flex: 1
+                }}>
+                  <div style={{ fontWeight: 600, marginBottom: 8 }}>Item Details</div>
+                  <ul style={{ margin: 0, paddingLeft: 20 }}>
+                    {Array.isArray(selectedRow.details) && selectedRow.details.length > 0
+                      ? selectedRow.details.map((detail, idx) => (
+                          <li key={idx}>{detail}</li>
+                        ))
+                      : <li>N/A</li>
+                    }
+                  </ul>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div style={{ color: '#888' }}>Select an item to see details</div>
+          )}
+        </div>
       </div>
-      <button style={{ marginTop: 10 }} onClick={handleReserve}>
+      <style>{`
+        .reserve-btn {
+          font-family: Inter, system-ui, sans-serif;
+          font-weight: 600;
+          font-size: 16px;
+          color: #222F3E;
+          background: #fff;
+          border: 1px solid #b5bec6;
+          border-radius: 8px;
+          padding: 8px 20px;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .reserve-btn:hover {
+          background: #e3f0fb;
+        }
+      `}</style>
+      <button className="reserve-btn" style={{ marginTop: 10, marginRight: 10 }} onClick={handleReserve}>
         RESERVE
+      </button>
+      <button className="reserve-btn" style={{ marginTop: 10 }} onClick={handleLogout}>
+        LOGOUT
       </button>
     </div>
   );
