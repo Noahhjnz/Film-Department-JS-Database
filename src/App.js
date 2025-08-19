@@ -138,32 +138,34 @@ function App() {
             <>
               {/* Name Box*/}
               <div style={{
-                border: '2px solid #888',
-                borderRadius: 8,
+                color: '#000000',
+                borderRadius: 10,
                 padding: 8,
                 marginBottom: 16,
                 textAlign: 'center',
-                fontWeight: 600
+                fontWeight: 600,
+                fontSize: 24,
+                fontFamily: 'Inter, system-ui, sans-serif',
               }}>
                 {selectedRow.name || 'Name Of Item'}
               </div>
               {/* Image and Details*/}
-              <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+              <div style={{ fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 250, fontSize: 18, color: '#000000', display: 'flex', gap: 24, alignItems: 'flex-start' }}>
                 {/* Image Box */}
                 <div style={{
                   border: '2px solid #888',
                   borderRadius: 8,
-                  padding: 8,
-                  minWidth: 120,
-                  minHeight: 120,
+                  padding: 0,
+                  minWidth: 250,
+                  minHeight: 250,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}>
                   {selectedRow.imageUrl ? (
-                    <img src={selectedRow.imageUrl} alt={selectedRow.name} style={{ maxWidth: 100, maxHeight: 100 }} />
+                    <img src={selectedRow.imageUrl} alt={selectedRow.name} style={{ maxWidth: 250, maxHeight: 250 }} />
                   ) : (
-                    <div style={{ color: '#888' }}>No Image</div>
+                    <div style={{fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 600, fontSize: 24, color: '#000000', }}>No Image</div>
                   )}
                 </div>
                 {/* Details Box */}
@@ -173,7 +175,7 @@ function App() {
                   padding: 16,
                   flex: 1
                 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 8 }}>Item Details</div>
+                  <div style={{ fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 600, fontSize: 20, color: '#000000' }}>Item Details</div>
                   <ul style={{ margin: 0, paddingLeft: 20 }}>
                     {Array.isArray(selectedRow.details) && selectedRow.details.length > 0
                       ? selectedRow.details.map((detail, idx) => (
