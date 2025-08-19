@@ -10,6 +10,7 @@ import {
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { AgGridReact } from "ag-grid-react";
 import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
+import 'ag-grid-enterprise';
 import { signOut } from "firebase/auth";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -19,6 +20,12 @@ function App() {
   const [selectedRow, setSelectedRow] = useState(null);
 
   const columnDefs = [
+    { headerName: "Type", 
+      field: "type", 
+      rowGroup: true, 
+      hide: true },
+
+
     { headerName: "Name", 
       field: "name", 
       flex: 1, 
@@ -113,6 +120,8 @@ function App() {
           <AgGridReact
             rowData={rowData}
             columnDefs={columnDefs}
+            groupDisplayType="multipleColumn"
+            groupDefaultExpanded={0} 
             onRowClicked={(e) => {
               if (!e.data.is_divider) setSelectedRow(e.data);
             }}
